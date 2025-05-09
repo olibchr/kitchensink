@@ -1,0 +1,162 @@
+openapi: 3.1.0
+info:
+  title: Kitchensink API
+  description: A RESTful API for managing member information. For detailed data model diagrams, see [Data Models](data-models.md)
+  version: 1.0.0
+  
+servers:
+  - url: /rest
+    description: Base URL for all API endpoints
+
+paths:
+  /members:
+    get:
+      summary: List all members
+      description: Retrieves a list of all members, ordered by name
+      operationId: listAllMembers
+      responses:
+        '200':
+          description: A list of members
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Member'
+              example:
+                - id: 1
+                  name: "John Smith"
+                  email: "john.smith@example.com"
+                  phoneNumber: "1234567890"
+                - id: 2
+                  name: "Jane Doe"
+                  email: "jane.doe@example.com"
+                  phoneNumber: "9876543210"
+    
+    post:
+      summary: Create a new member
+      description: Creates a new member with the provided information
+      operationId: createMember
+      requestBody:
+        description: Member to be created
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MemberRequest'
+            example:
+              name: "Alice Johnson"
+              email: "alice.johnson@example.com"
+              phoneNumber: "5551234567"
+      
+      responses:
+        '200':
+          description: Member created successfully
+        '400':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+              example:
+                name: "Must not contain numbers"
+                phoneNumber: "size must be between 10 and 12"
+        '409':
+          description: Email already exists
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  email:
+                    type: string
+              example:
+                email: "Email taken"
+  
+  /members/{id}:
+    get:
+      summary: Get member by ID
+      description: Retrieves a specific member by their ID
+      operationId: lookupMemberById
+      parameters:
+        - name: id
+          in: path
+          description: Numeric ID of the member to retrieve
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Member found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Member'
+              example:
+                id: 1
+                name: "John Smith"
+                email: "john.smith@example.com"
+                phoneNumber: "1234567890"
+        '404':
+          description: Member not found
+
+components:
+  schemas:
+    Member:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: Unique identifier for the member (auto-generated)
+        name:
+          type: string
+          description: The name of the member
+          minLength: 1
+          maxLength: 25
+          pattern: "[^0-9]*"
+        email:
+          type: string
+          format: email
+          description: The email address of the member
+        phoneNumber:
+          type: string
+          description: The phone number of the member
+          minLength: 10
+          maxLength: 12
+          pattern: "^[0-9]+$"
+      required:
+        - name
+        - email
+        - phoneNumber
+    
+    MemberRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          description: The name of the member
+          minLength: 1
+          maxLength: 25
+          pattern: "[^0-9]*"
+        email:
+          type: string
+          format: email
+          description: The email address of the member
+        phoneNumber:
+          type: string
+          description: The phone number of the member
+          minLength: 10
+          maxLength: 12
+          pattern: "^[0-9]+$"
+      required:
+        - name
+        - email
+        - phoneNumber
+    
+    ValidationError:
+      type: object
+      additionalProperties:
+        type: string
+      description: Map of field names to validation error messages 
