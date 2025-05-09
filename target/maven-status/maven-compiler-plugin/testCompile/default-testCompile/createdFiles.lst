@@ -1,2 +1,6 @@
+org/jboss/as/quickstarts/kitchensink/test/MemberApiEndToEndIT$GetMemberByIdTest.class
 org/jboss/as/quickstarts/kitchensink/test/RemoteMemberRegistrationIT.class
+org/jboss/as/quickstarts/kitchensink/test/MemberApiEndToEndIT.class
+org/jboss/as/quickstarts/kitchensink/test/MemberApiEndToEndIT$CreateMemberTest.class
 org/jboss/as/quickstarts/kitchensink/test/MemberRegistrationIT.class
+org/jboss/as/quickstarts/kitchensink/test/MemberApiEndToEndIT$GetAllMembersTest.class

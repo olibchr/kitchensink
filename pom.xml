@@ -277,7 +277,7 @@
                         </goals>
                         <configuration>
                             <destFile>${project.build.directory}/coverage-reports/jacoco-it.exec</destFile>
-                            <propertyName>arquillian.jvm.args</propertyName>
+                            <propertyName>jacoco.agent.argLine</propertyName>
                         </configuration>
                     </execution>
                     
@@ -306,6 +306,39 @@
                             <outputDirectory>${project.build.directory}/coverage-reports/jacoco-it</outputDirectory>
                         </configuration>
                     </execution>
+                    
+                    <!-- Merge unit and integration test coverage reports -->
+                    <execution>
+                        <id>merge-results</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>merge</goal>
+                        </goals>
+                        <configuration>
+                            <fileSets>
+                                <fileSet>
+                                    <directory>${project.build.directory}/coverage-reports</directory>
+                                    <includes>
+                                        <include>*.exec</include>
+                                    </includes>
+                                </fileSet>
+                            </fileSets>
+                            <destFile>${project.build.directory}/coverage-reports/aggregate.exec</destFile>
+                        </configuration>
+                    </execution>
+                    
+                    <!-- Create aggregated report -->
+                    <execution>
+                        <id>post-merge-report</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>report</goal>
+                        </goals>
+                        <configuration>
+                            <dataFile>${project.build.directory}/coverage-reports/aggregate.exec</dataFile>
+                            <outputDirectory>${project.build.directory}/coverage-reports/aggregate</outputDirectory>
+                        </configuration>
+                    </execution>
                 </executions>
             </plugin>
         </plugins>
@@ -332,10 +365,15 @@
                         <configuration>
                             <includes>
                                 <include>**/RemoteMemberRegistrationIT</include>
+                                <include>**/MemberApiEndToEndIT</include>
+                                <include>**/MemberApiEndToEndIT$GetMemberByIdTest</include>
+                                <include>**/MemberApiEndToEndIT$CreateMemberTest</include>
+                                <include>**/MemberApiEndToEndIT$GetAllMembersTest</include>
                             </includes>
                             <excludes>
                                 <exclude>**/MemberRegistrationIT</exclude>
                             </excludes>
+                            <argLine>${jacoco.agent.argLine}</argLine>
                         </configuration>
                         <executions>
                             <execution>

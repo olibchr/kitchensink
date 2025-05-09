@@ -25,7 +25,7 @@ under the License.
     <language>en-us</language>
     <copyright>&#169;2025 JBoss by Red Hat</copyright>
     <item>
-      <title>File: 11,
+      <title>File: 12,
              Errors: 0,
              Warnings: 0,
              Infos: 0
@@ -89,6 +89,20 @@ under the License.
                           <tr>
                 <td>
                   <a href="https://github.com/wildfly/wildfly-quickstart-parent/kitchensink/checkstyle.html#org.jboss.as.quickstarts.kitchensink.data.MemberListProducer.java">org/jboss/as/quickstarts/kitchensink/data/MemberListProducer.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/wildfly/wildfly-quickstart-parent/kitchensink/checkstyle.html#org.jboss.as.quickstarts.kitchensink.test.MemberApiEndToEndIT.java">org/jboss/as/quickstarts/kitchensink/test/MemberApiEndToEndIT.java</a>
                 </td>
                 <td>
                   0

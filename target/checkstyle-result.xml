@@ -20,6 +20,8 @@
 </file>
 <file name="/Users/oliverbecher/2_Projects/mongodb/kitchensink/src/test/java/org/jboss/as/quickstarts/kitchensink/test/MemberRegistrationIT.java">
 </file>
+<file name="/Users/oliverbecher/2_Projects/mongodb/kitchensink/src/test/java/org/jboss/as/quickstarts/kitchensink/test/MemberApiEndToEndIT.java">
+</file>
 <file name="/Users/oliverbecher/2_Projects/mongodb/kitchensink/src/main/resources/META-INF/persistence.xml">
 </file>
 </checkstyle>
