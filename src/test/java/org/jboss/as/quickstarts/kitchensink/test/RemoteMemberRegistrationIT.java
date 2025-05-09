@@ -57,18 +57,25 @@ public class RemoteMemberRegistrationIT {
 
     @Test
     public void testRegister() throws Exception {
+        // Generate a unique email with timestamp
+        String timestamp = String.valueOf(System.currentTimeMillis());
+        String uniqueEmail = "jane" + timestamp + "@mailinator.com";
+
         Member newMember = new Member();
         newMember.setName("Jane Doe");
-        newMember.setEmail("jane@mailinator.com");
+        newMember.setEmail(uniqueEmail);
         newMember.setPhoneNumber("2125551234");
+
         JsonObject json = Json.createObjectBuilder()
                 .add("name", "Jane Doe")
-                .add("email", "jane@mailinator.com")
+                .add("email", uniqueEmail)
                 .add("phoneNumber", "2125551234").build();
+
         HttpRequest request = HttpRequest.newBuilder(getHTTPEndpoint())
                 .header("Content-Type", "application/json")
                 .POST(HttpRequest.BodyPublishers.ofString(json.toString()))
                 .build();
+
         HttpResponse response = HttpClient.newHttpClient().send(request, HttpResponse.BodyHandlers.ofString());
         Assert.assertEquals(200, response.statusCode());
         Assert.assertEquals("", response.body().toString() );

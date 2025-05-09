@@ -32,5 +32,8 @@
         <!--<configuration>
             <property name="jbossHome">EAP_HOME</property>
         </configuration> -->
+        <configuration>
+            <property name="javaVmArguments">${arquillian.jvm.args}</property>
+        </configuration>
     </container>
 </arquillian>

@@ -1,0 +1,9 @@
+GROUP,PACKAGE,CLASS,INSTRUCTION_MISSED,INSTRUCTION_COVERED,BRANCH_MISSED,BRANCH_COVERED,LINE_MISSED,LINE_COVERED,COMPLEXITY_MISSED,COMPLEXITY_COVERED,METHOD_MISSED,METHOD_COVERED
+Quickstart: kitchensink,org.jboss.as.quickstarts.kitchensink.rest,JaxRsActivator,3,0,0,0,1,0,1,0,1,0
+Quickstart: kitchensink,org.jboss.as.quickstarts.kitchensink.rest,MemberResourceRESTService,160,0,10,0,39,0,12,0,7,0
+Quickstart: kitchensink,org.jboss.as.quickstarts.kitchensink.controller,MemberController,66,0,4,0,21,0,6,0,4,0
+Quickstart: kitchensink,org.jboss.as.quickstarts.kitchensink.service,MemberRegistration,24,0,0,0,5,0,2,0,2,0
+Quickstart: kitchensink,org.jboss.as.quickstarts.kitchensink.model,Member,16,15,0,0,6,7,5,4,5,4
+Quickstart: kitchensink,org.jboss.as.quickstarts.kitchensink.data,MemberRepository,73,0,0,0,12,0,4,0,4,0
+Quickstart: kitchensink,org.jboss.as.quickstarts.kitchensink.data,MemberListProducer,15,0,0,0,6,0,4,0,4,0
+Quickstart: kitchensink,org.jboss.as.quickstarts.kitchensink.util,Resources,9,0,0,0,2,0,2,0,2,0
