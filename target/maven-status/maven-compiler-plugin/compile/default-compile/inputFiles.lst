@@ -1,0 +1,8 @@
+/Users/oliverbecher/2_Projects/mongodb/kitchensink/src/main/java/org/jboss/as/quickstarts/kitchensink/rest/MemberResourceRESTService.java
+/Users/oliverbecher/2_Projects/mongodb/kitchensink/src/main/java/org/jboss/as/quickstarts/kitchensink/util/Resources.java
+/Users/oliverbecher/2_Projects/mongodb/kitchensink/src/main/java/org/jboss/as/quickstarts/kitchensink/data/MemberRepository.java
+/Users/oliverbecher/2_Projects/mongodb/kitchensink/src/main/java/org/jboss/as/quickstarts/kitchensink/controller/MemberController.java
+/Users/oliverbecher/2_Projects/mongodb/kitchensink/src/main/java/org/jboss/as/quickstarts/kitchensink/data/MemberListProducer.java
+/Users/oliverbecher/2_Projects/mongodb/kitchensink/src/main/java/org/jboss/as/quickstarts/kitchensink/rest/JaxRsActivator.java
+/Users/oliverbecher/2_Projects/mongodb/kitchensink/src/main/java/org/jboss/as/quickstarts/kitchensink/model/Member.java
+/Users/oliverbecher/2_Projects/mongodb/kitchensink/src/main/java/org/jboss/as/quickstarts/kitchensink/service/MemberRegistration.java
