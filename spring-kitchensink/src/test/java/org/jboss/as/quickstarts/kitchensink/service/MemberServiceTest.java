@@ -25,7 +25,7 @@ public class MemberServiceTest {
     private MemberRepository memberRepository;
 
     @InjectMocks
-    private MemberService memberService;
+    private MemberServiceImpl memberService;
 
     private Member testMember;
 
@@ -39,7 +39,7 @@ public class MemberServiceTest {
     }
 
     @Test
-    void testRegisterSuccess() {
+    void testRegisterSuccess() throws Exception {
         // given
         when(memberRepository.findByEmail(anyString())).thenReturn(Optional.empty());
         when(memberRepository.save(any(Member.class))).thenReturn(testMember);
@@ -61,7 +61,11 @@ public class MemberServiceTest {
 
         // when/then
         Exception exception = assertThrows(ValidationException.class, () -> {
-            memberService.register(testMember);
+            try {
+                memberService.register(testMember);
+            } catch (Exception e) {
+                throw e;
+            }
         });
 
         assertTrue(exception.getMessage().contains("Email already exists"));
