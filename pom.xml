@@ -1,436 +1,112 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--
-    JBoss, Home of Professional Open Source
-    Copyright 2015, Red Hat, Inc. and/or its affiliates, and individual
-    contributors by the @authors tag. See the copyright.txt in the
-    distribution for a full listing of individual contributors.
-
-    Licensed under the Apache License, Version 2.0 (the "License");
-    you may not use this file except in compliance with the License.
-    You may obtain a copy of the License at
-    http://www.apache.org/licenses/LICENSE-2.0
-    Unless required by applicable law or agreed to in writing, software
-    distributed under the License is distributed on an "AS IS" BASIS,
-    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-    See the License for the specific language governing permissions and
-    limitations under the License.
--->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
+    
     <parent>
-        <groupId>org.jboss.eap.quickstarts</groupId>
-        <artifactId>jboss-eap-quickstart-parent</artifactId>
-        <!--
-        Maintain separation between the artifact id and the version to help prevent
-        merge conflicts between commits changing the GA and those changing the V.
-        -->
-        <version>6.0.0.redhat-00001</version>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>3.2.4</version>
         <relativePath/>
     </parent>
-    <artifactId>kitchensink</artifactId>
-    <version>8.0.0.GA</version>
-    <packaging>war</packaging>
-    <name>Quickstart: kitchensink</name>
-    <description>A starter Jakarta EE web application project for use in JBoss EAP</description>
-
-    <licenses>
-        <license>
-            <name>Apache License, Version 2.0</name>
-            <url>http://www.apache.org/licenses/LICENSE-2.0.html</url>
-            <distribution>repo</distribution>
-        </license>
-    </licenses>
-
+    
+    <groupId>org.jboss.as.quickstarts</groupId>
+    <artifactId>spring-kitchensink</artifactId>
+    <version>1.0.0</version>
+    <name>Spring Kitchensink</name>
+    <description>Migration of JBoss Kitchensink to Spring Boot</description>
+    
     <properties>
-        <!-- The versions for BOMs, Dependencies and Plugins -->
-        <version.server.bom>8.0.0.GA-redhat-00009</version.server.bom>
-        <version.eap.maven.plugin>1.0.0.Final-redhat-00014</version.eap.maven.plugin>
+        <java.version>21</java.version>
+        <jakarta.json.version>2.1.2</jakarta.json.version>
     </properties>
-
-    <repositories>
-        <!-- keep this repository the first -->
-        <repository>
-            <id>jboss-public-maven-repository</id>
-            <name>JBoss Public Maven Repository</name>
-            <url>https://repository.jboss.org/nexus/content/groups/public/</url>
-            <releases>
-                <enabled>true</enabled>
-                <updatePolicy>never</updatePolicy>
-            </releases>
-            <snapshots>
-                <enabled>true</enabled>
-                <updatePolicy>never</updatePolicy>
-            </snapshots>
-            <layout>default</layout>
-        </repository>
-        <repository>
-            <id>redhat-ga-maven-repository</id>
-            <name>Red Hat GA Maven Repository</name>
-            <url>https://maven.repository.redhat.com/ga/</url>
-            <releases>
-                <enabled>true</enabled>
-                <updatePolicy>never</updatePolicy>
-            </releases>
-            <snapshots>
-                <enabled>true</enabled>
-                <updatePolicy>never</updatePolicy>
-            </snapshots>
-            <layout>default</layout>
-        </repository>
-    </repositories>
-    <pluginRepositories>
-        <!-- keep this repository the first -->
-        <pluginRepository>
-            <id>jboss-public-maven-repository</id>
-            <name>JBoss Public Maven Repository</name>
-            <url>https://repository.jboss.org/nexus/content/groups/public/</url>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-        </pluginRepository>
-        <pluginRepository>
-            <id>redhat-ga-maven-repository</id>
-            <name>Red Hat GA Maven Repository</name>
-            <url>https://maven.repository.redhat.com/ga/</url>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-        </pluginRepository>
-    </pluginRepositories>
-
-    <dependencyManagement>
-        <dependencies>
-            <!-- importing the ee-with-tools BOM adds specs and other useful artifacts as managed dependencies -->
-            <dependency>
-                <groupId>org.jboss.bom</groupId>
-                <artifactId>jboss-eap-ee-with-tools</artifactId>
-                <version>${version.server.bom}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
-
+    
     <dependencies>
-
-        <!-- First declare the APIs we depend on and need for compilation. All
-        of them are provided by JBoss EAP -->
-
-        <!-- Import the CDI API, we use provided scope as the API is included in
-        JBoss EAP -->
+        <!-- Spring Boot Core -->
         <dependency>
-            <groupId>jakarta.enterprise</groupId>
-            <artifactId>jakarta.enterprise.cdi-api</artifactId>
-            <scope>provided</scope>
-        </dependency>
-
-        <!-- Needed for running tests (you may also use TestNG) -->
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <scope>test</scope>
-        </dependency>
-
-        <!-- Now we declare any tools needed -->
-
-        <!-- Annotation processor to generate the JPA metamodel classes for
-        typesafe criteria queries -->
-        <dependency>
-            <groupId>org.hibernate.orm</groupId>
-            <artifactId>hibernate-jpamodelgen</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <!-- Jakarta Activation needed for JPA model generation -->
-        <dependency>
-            <groupId>jakarta.activation</groupId>
-            <artifactId>jakarta.activation-api</artifactId>
-            <scope>provided</scope>
-        </dependency>
-
-        <!-- Bean Validation Implementation 
-        Provides portable constraints such as @Email 
-        Hibernate Validator is shipped in JBoss EAP -->
-        <dependency>
-            <groupId>org.hibernate.validator</groupId>
-            <artifactId>hibernate-validator</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <!-- hibernate-validator dependencies excluded on server dependency management yet required -->
-        <dependency>
-            <groupId>jakarta.validation</groupId>
-            <artifactId>jakarta.validation-api</artifactId>
-            <scope>provided</scope>
-        </dependency>
-
-        <!-- Annotation processor that raising compilation errors whenever constraint
-        annotations are incorrectly used. -->
-        <dependency>
-            <groupId>org.hibernate.validator</groupId>
-            <artifactId>hibernate-validator-annotation-processor</artifactId>
-            <scope>provided</scope>
-        </dependency>
-
-        <!-- Import the JPA API, we use provided scope as the API is included in
-        JBoss EAP -->
-        <dependency>
-            <groupId>jakarta.persistence</groupId>
-            <artifactId>jakarta.persistence-api</artifactId>
-            <scope>provided</scope>
-        </dependency>
-
-        <!-- Optional, but highly recommended -->
-        <!-- Arquillian allows you to test enterprise code such as EJBs and Transactional(JTA)
-        JPA from JUnit/TestNG -->
-        <dependency>
-            <groupId>org.jboss.arquillian.junit</groupId>
-            <artifactId>arquillian-junit-container</artifactId>
-            <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.jboss.arquillian.protocol</groupId>
-            <artifactId>arquillian-protocol-servlet-jakarta</artifactId>
-            <scope>test</scope>
-        </dependency>
-
-        <!-- Import the Common Annotations API (JSR-250), we use provided scope
-        as the API is included in JBoss EAP -->
-        <dependency>
-            <groupId>jakarta.annotation</groupId>
-            <artifactId>jakarta.annotation-api</artifactId>
-            <scope>provided</scope>
-        </dependency>
-
-        <!-- Import the EJB API, we use provided scope as the API is included in
-        JBoss EAP -->
-        <dependency>
-            <groupId>jakarta.ejb</groupId>
-            <artifactId>jakarta.ejb-api</artifactId>
-            <scope>provided</scope>
-        </dependency>
-
-        <!-- Import the JSF API, we use provided scope as the API is included in
-        JBoss EAP -->
-        <dependency>
-            <groupId>jakarta.faces</groupId>
-            <artifactId>jakarta.faces-api</artifactId>
-            <scope>provided</scope>
-        </dependency>
-
-        <!-- Import the JAX-RS API, we use provided scope as the API is included
-        in JBoss EAP -->
-        <dependency>
-            <groupId>jakarta.ws.rs</groupId>
-            <artifactId>jakarta.ws.rs-api</artifactId>
-            <scope>provided</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>jakarta.xml.bind</groupId>
-            <artifactId>jakarta.xml.bind-api</artifactId>
-            <scope>provided</scope>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter</artifactId>
         </dependency>
         
+        <!-- Web -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        
+        <!-- JPA -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-jpa</artifactId>
+        </dependency>
+        
+        <!-- Validation -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-validation</artifactId>
+        </dependency>
+        
+        <!-- Thymeleaf (replacing JSF) -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-thymeleaf</artifactId>
+        </dependency>
+        
+        <!-- H2 Database (we can replace with MongoDB later) -->
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+        
+        <!-- Developer Tools -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-devtools</artifactId>
+            <scope>runtime</scope>
+            <optional>true</optional>
+        </dependency>
+        
+        <!-- Testing -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        
+        <!-- Jakarta JSON Processing API for tests -->
         <dependency>
             <groupId>jakarta.json</groupId>
             <artifactId>jakarta.json-api</artifactId>
+            <version>${jakarta.json.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.eclipse.parsson</groupId>
-            <artifactId>parsson</artifactId>
+            <groupId>org.eclipse</groupId>
+            <artifactId>yasson</artifactId>
+            <version>3.0.3</version>
             <scope>test</scope>
         </dependency>
-
     </dependencies>
-
+    
     <build>
         <plugins>
             <plugin>
-                <groupId>org.jacoco</groupId>
-                <artifactId>jacoco-maven-plugin</artifactId>
-                <version>0.8.8</version>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-failsafe-plugin</artifactId>
                 <executions>
-                    <!-- Prepare agent for unit tests -->
                     <execution>
-                        <id>prepare-unit-tests</id>
                         <goals>
-                            <goal>prepare-agent</goal>
+                            <goal>integration-test</goal>
+                            <goal>verify</goal>
                         </goals>
-                        <configuration>
-                            <destFile>${project.build.directory}/coverage-reports/jacoco-ut.exec</destFile>
-                        </configuration>
-                    </execution>
-                    
-                    <!-- Prepare agent for integration tests -->
-                    <execution>
-                        <id>prepare-integration-tests</id>
-                        <goals>
-                            <goal>prepare-agent-integration</goal>
-                        </goals>
-                        <configuration>
-                            <destFile>${project.build.directory}/coverage-reports/jacoco-it.exec</destFile>
-                            <propertyName>jacoco.agent.argLine</propertyName>
-                        </configuration>
-                    </execution>
-                    
-                    <!-- Generate reports after tests -->
-                    <execution>
-                        <id>report</id>
-                        <phase>verify</phase>
-                        <goals>
-                            <goal>report</goal>
-                        </goals>
-                        <configuration>
-                            <dataFile>${project.build.directory}/coverage-reports/jacoco-ut.exec</dataFile>
-                            <outputDirectory>${project.build.directory}/coverage-reports/jacoco-ut</outputDirectory>
-                        </configuration>
-                    </execution>
-                    
-                    <!-- Generate reports after integration tests -->
-                    <execution>
-                        <id>report-integration</id>
-                        <phase>post-integration-test</phase>
-                        <goals>
-                            <goal>report-integration</goal>
-                        </goals>
-                        <configuration>
-                            <dataFile>${project.build.directory}/coverage-reports/jacoco-it.exec</dataFile>
-                            <outputDirectory>${project.build.directory}/coverage-reports/jacoco-it</outputDirectory>
-                        </configuration>
-                    </execution>
-                    
-                    <!-- Merge unit and integration test coverage reports -->
-                    <execution>
-                        <id>merge-results</id>
-                        <phase>verify</phase>
-                        <goals>
-                            <goal>merge</goal>
-                        </goals>
-                        <configuration>
-                            <fileSets>
-                                <fileSet>
-                                    <directory>${project.build.directory}/coverage-reports</directory>
-                                    <includes>
-                                        <include>*.exec</include>
-                                    </includes>
-                                </fileSet>
-                            </fileSets>
-                            <destFile>${project.build.directory}/coverage-reports/aggregate.exec</destFile>
-                        </configuration>
-                    </execution>
-                    
-                    <!-- Create aggregated report -->
-                    <execution>
-                        <id>post-merge-report</id>
-                        <phase>verify</phase>
-                        <goals>
-                            <goal>report</goal>
-                        </goals>
-                        <configuration>
-                            <dataFile>${project.build.directory}/coverage-reports/aggregate.exec</dataFile>
-                            <outputDirectory>${project.build.directory}/coverage-reports/aggregate</outputDirectory>
-                        </configuration>
                     </execution>
                 </executions>
             </plugin>
         </plugins>
     </build>
-
-    <profiles>
-        <profile>
-            <!-- An optional Arquillian testing profile that executes tests in a remote JBoss EAP instance.
-            Run with: mvn clean verify -Parq-remote -->
-            <id>arq-remote</id>
-            <dependencies>
-                <dependency>
-                    <groupId>org.wildfly.arquillian</groupId>
-                    <artifactId>wildfly-arquillian-container-remote</artifactId>
-                    <scope>test</scope>
-                </dependency>
-            </dependencies>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-failsafe-plugin</artifactId>
-                        <version>${version.failsafe.plugin}</version>
-                        <configuration>
-                            <includes>
-                                <include>**/RemoteMemberRegistrationIT</include>
-                                <include>**/MemberApiEndToEndIT</include>
-                                <include>**/MemberApiEndToEndIT$GetMemberByIdTest</include>
-                                <include>**/MemberApiEndToEndIT$CreateMemberTest</include>
-                                <include>**/MemberApiEndToEndIT$GetAllMembersTest</include>
-                            </includes>
-                            <excludes>
-                                <exclude>**/MemberRegistrationIT</exclude>
-                            </excludes>
-                            <argLine>${jacoco.agent.argLine}</argLine>
-                        </configuration>
-                        <executions>
-                            <execution>
-                                <goals>
-                                    <goal>integration-test</goal>
-                                    <goal>verify</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-        <profile>
-            <id>openshift</id>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.jboss.eap.plugins</groupId>
-                        <artifactId>eap-maven-plugin</artifactId>
-                        <version>${version.eap.maven.plugin}</version>
-                        <configuration>
-                            <channels>
-                                <channel>
-                                    <manifest>
-                                        <groupId>org.jboss.eap.channels</groupId>
-                                        <artifactId>eap-8.0</artifactId>
-                                    </manifest>
-                                </channel>
-                            </channels>
-                            <feature-packs>
-                                <feature-pack>
-                                    <location>org.jboss.eap:wildfly-ee-galleon-pack</location>
-                                </feature-pack>
-                                <feature-pack>
-                                    <location>org.jboss.eap.cloud:eap-cloud-galleon-pack</location>
-                                </feature-pack>
-                            </feature-packs>
-                            <layers>
-                                <layer>cloud-server</layer>
-                                <layer>h2-driver</layer>
-                                <layer>ejb</layer>
-                                <layer>jsf</layer>
-                            </layers>
-                            <filename>ROOT.war</filename>
-                        </configuration>
-                        <executions>
-                            <execution>
-                                <goals>
-                                    <goal>package</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-    </profiles>
-
-</project>
+</project> 

@@ -1,3 +1,9 @@
-/Users/oliverbecher/2_Projects/mongodb/kitchensink/src/test/java/org/jboss/as/quickstarts/kitchensink/test/RemoteMemberRegistrationIT.java
+/Users/oliverbecher/2_Projects/mongodb/kitchensink/src/test/java/org/jboss/as/quickstarts/kitchensink/service/MemberServiceTest.java
+/Users/oliverbecher/2_Projects/mongodb/kitchensink/src/test/java/org/jboss/as/quickstarts/kitchensink/rest/MemberRestControllerTest.java
+/Users/oliverbecher/2_Projects/mongodb/kitchensink/src/test/java/org/jboss/as/quickstarts/kitchensink/rest/HealthCheckControllerTest.java
+/Users/oliverbecher/2_Projects/mongodb/kitchensink/src/test/java/org/jboss/as/quickstarts/kitchensink/test/ComprehensiveApiEndToEndIT.java
+/Users/oliverbecher/2_Projects/mongodb/kitchensink/src/test/java/org/jboss/as/quickstarts/kitchensink/model/MemberTest.java
+/Users/oliverbecher/2_Projects/mongodb/kitchensink/src/test/java/org/jboss/as/quickstarts/kitchensink/test/GetAllMembersEndToEndIT.java
+/Users/oliverbecher/2_Projects/mongodb/kitchensink/src/test/java/org/jboss/as/quickstarts/kitchensink/data/MemberRepositoryTest.java
+/Users/oliverbecher/2_Projects/mongodb/kitchensink/src/test/java/org/jboss/as/quickstarts/kitchensink/test/CreateMemberEndToEndIT.java
 /Users/oliverbecher/2_Projects/mongodb/kitchensink/src/test/java/org/jboss/as/quickstarts/kitchensink/test/MemberApiEndToEndIT.java
-/Users/oliverbecher/2_Projects/mongodb/kitchensink/src/test/java/org/jboss/as/quickstarts/kitchensink/test/MemberRegistrationIT.java

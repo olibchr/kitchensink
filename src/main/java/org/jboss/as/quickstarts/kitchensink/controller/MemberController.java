@@ -1,70 +1,68 @@
-/*
- * JBoss, Home of Professional Open Source
- * Copyright 2015, Red Hat, Inc. and/or its affiliates, and individual
- * contributors by the @authors tag. See the copyright.txt in the
- * distribution for a full listing of individual contributors.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * http://www.apache.org/licenses/LICENSE-2.0
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package org.jboss.as.quickstarts.kitchensink.controller;
 
-import jakarta.annotation.PostConstruct;
-import jakarta.enterprise.inject.Model;
-import jakarta.enterprise.inject.Produces;
-import jakarta.faces.application.FacesMessage;
-import jakarta.faces.context.FacesContext;
-import jakarta.inject.Inject;
-import jakarta.inject.Named;
-
+import jakarta.validation.Valid;
 import org.jboss.as.quickstarts.kitchensink.model.Member;
-import org.jboss.as.quickstarts.kitchensink.service.MemberRegistration;
+import org.jboss.as.quickstarts.kitchensink.service.MemberService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-// The @Model stereotype is a convenience mechanism to make this a request-scoped bean that has an
-// EL name
-// Read more about the @Model stereotype in this FAQ:
-// http://www.cdi-spec.org/faq/#accordion6
-@Model
+@Controller
 public class MemberController {
 
-    @Inject
-    private FacesContext facesContext;
+    private final MemberService memberService;
 
-    @Inject
-    private MemberRegistration memberRegistration;
-
-    @Produces
-    @Named
-    private Member newMember;
-
-    @PostConstruct
-    public void initNewMember() {
-        newMember = new Member();
+    @Autowired
+    public MemberController(MemberService memberService) {
+        this.memberService = memberService;
     }
 
-    public void register() throws Exception {
+    @GetMapping("/")
+    public String home(Model model) {
+        // Always add an empty member object and the member list
+        if (!model.containsAttribute("newMember")) {
+            model.addAttribute("newMember", new Member());
+        }
+        model.addAttribute("members", memberService.findAllOrderedByName());
+        return "index";
+    }
+
+    @PostMapping("/members")
+    public String register(@Valid @ModelAttribute("newMember") Member member,
+            BindingResult result,
+            Model model,
+            RedirectAttributes redirectAttributes) {
+
+        // If validation errors, return to the form with errors
+        if (result.hasErrors()) {
+            model.addAttribute("members", memberService.findAllOrderedByName());
+            return "index";
+        }
+
         try {
-            memberRegistration.register(newMember);
-            FacesMessage m = new FacesMessage(FacesMessage.SEVERITY_INFO, "Registered!", "Registration successful");
-            facesContext.addMessage(null, m);
-            initNewMember();
+            // Register the member
+            memberService.register(member);
+            // Add success message as flash attribute (will survive the redirect)
+            redirectAttributes.addFlashAttribute("successMessage", "Registration successful!");
+            // Redirect to home page (PRG pattern - Post/Redirect/Get)
+            return "redirect:/";
         } catch (Exception e) {
-            String errorMessage = getRootErrorMessage(e);
-            FacesMessage m = new FacesMessage(FacesMessage.SEVERITY_ERROR, errorMessage, "Registration unsuccessful");
-            facesContext.addMessage(null, m);
+            // Add error message and return to form
+            model.addAttribute("members", memberService.findAllOrderedByName());
+            model.addAttribute("errorMessage", getRootErrorMessage(e));
+            return "index";
         }
     }
 
     private String getRootErrorMessage(Exception e) {
         // Default to general error message that registration failed.
         String errorMessage = "Registration failed. See server log for more information";
+
         if (e == null) {
             // This shouldn't happen, but return the default messages
             return errorMessage;
@@ -77,8 +75,8 @@ public class MemberController {
             errorMessage = t.getLocalizedMessage();
             t = t.getCause();
         }
+
         // This is the root cause message
         return errorMessage;
     }
-
 }
