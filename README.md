@@ -60,3 +60,45 @@ Database connection details:
 - JDBC URL: `jdbc:h2:mem:kitchensinkdb`
 - Username: `sa`
 - Password: (empty) 
+
+## Documentation
+
+The documentation folder contains comprehensive information about the application:
+
+- **API Documentation**: Detailed OpenAPI specifications in `openapi.yaml` for all REST endpoints
+- **Data Models**: Visual representation of data models using Mermaid diagrams in `data-models.md`
+- **API Schema**: Details of data schemas and validation rules in `API_SCHEMA.md`
+
+## Measurement Scripts
+
+The project includes various measurement scripts in the `measurements` folder that analyze code quality:
+
+### Documentation Analysis (`documentation.py`)
+Analyzes the quality and completeness of project documentation, including:
+- JavaDoc coverage for classes and methods
+- README quality assessment
+- Code comment ratio
+- API documentation quality
+
+### Security Analysis (`security.py`)
+Performs security checks on the codebase, including:
+- Outdated and vulnerable dependencies
+- Static code security analysis
+- Vulnerability assessment by severity level
+
+### Complexity Analysis (`complexity.py`)
+Measures code complexity metrics, including:
+- Average method length and cyclomatic complexity
+- Dependency count and analysis
+- Configuration complexity
+
+### Correctness Analysis (`correctnes.py`)
+Evaluates code correctness through:
+- Code coverage analysis
+- Test quality assessment
+- Critical path coverage
+- Data store testing coverage
+
+To run a measurement script:
+```bash
+python measurements/documentation.py 
