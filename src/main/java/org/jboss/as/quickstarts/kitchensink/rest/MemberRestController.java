@@ -30,7 +30,7 @@ public class MemberRestController {
     }
 
     @GetMapping("/{id}")
-    public Member getMemberById(@PathVariable("id") Long id) {
+    public Member getMemberById(@PathVariable("id") String id) {
         return memberService.findById(id)
                 .orElseThrow(
                         () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Member not found with id: " + id));

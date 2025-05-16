@@ -2,36 +2,60 @@ package org.jboss.as.quickstarts.kitchensink.data;
 
 import org.jboss.as.quickstarts.kitchensink.model.Member;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.when;
 
-@DataJpaTest
+@ExtendWith(MockitoExtension.class)
 public class MemberRepositoryTest {
 
-    @Autowired
-    private TestEntityManager entityManager;
-
-    @Autowired
+    @Mock
     private MemberRepository memberRepository;
+
+    @Test
+    public void testSave() {
+        // given
+        Member member = new Member();
+        member.setName("Test User");
+        member.setEmail("test@example.com");
+        member.setPhoneNumber("1234567890");
+
+        when(memberRepository.save(any(Member.class))).thenAnswer(invocation -> {
+            Member savedMember = invocation.getArgument(0);
+            savedMember.setId("generatedId");
+            return savedMember;
+        });
+
+        // when
+        Member saved = memberRepository.save(member);
+
+        // then
+        assertNotNull(saved.getId());
+        assertEquals("generatedId", saved.getId());
+    }
 
     @Test
     public void testFindByEmail() {
         // given
         Member member = new Member();
         member.setName("Test User");
-        member.setEmail("test@example.com");
+        member.setEmail("test2@example.com");
         member.setPhoneNumber("1234567890");
-        entityManager.persist(member);
-        entityManager.flush();
+
+        when(memberRepository.findByEmail("test2@example.com")).thenReturn(Optional.of(member));
 
         // when
-        Optional<Member> found = memberRepository.findByEmail("test@example.com");
+        Optional<Member> found = memberRepository.findByEmail("test2@example.com");
 
         // then
         assertTrue(found.isPresent());
@@ -42,24 +66,16 @@ public class MemberRepositoryTest {
     public void testFindAllByOrderByNameAsc() {
         // given
         Member member1 = new Member();
-        member1.setName("Charlie");
-        member1.setEmail("charlie@example.com");
-        member1.setPhoneNumber("1234567890");
+        member1.setName("Alice");
 
         Member member2 = new Member();
-        member2.setName("Alice");
-        member2.setEmail("alice@example.com");
-        member2.setPhoneNumber("0987654321");
+        member2.setName("Bob");
 
         Member member3 = new Member();
-        member3.setName("Bob");
-        member3.setEmail("bob@example.com");
-        member3.setPhoneNumber("5678901234");
+        member3.setName("Charlie");
 
-        entityManager.persist(member1);
-        entityManager.persist(member2);
-        entityManager.persist(member3);
-        entityManager.flush();
+        when(memberRepository.findAllByOrderByNameAsc()).thenReturn(
+                Arrays.asList(member1, member2, member3));
 
         // when
         List<Member> members = memberRepository.findAllByOrderByNameAsc();

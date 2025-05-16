@@ -5,5 +5,7 @@
 /Users/oliverbecher/2_Projects/mongodb/kitchensink/src/main/java/org/jboss/as/quickstarts/kitchensink/controller/MemberController.java
 /Users/oliverbecher/2_Projects/mongodb/kitchensink/src/main/java/org/jboss/as/quickstarts/kitchensink/rest/MemberRestController.java
 /Users/oliverbecher/2_Projects/mongodb/kitchensink/src/main/java/org/jboss/as/quickstarts/kitchensink/KitchensinkApplication.java
+/Users/oliverbecher/2_Projects/mongodb/kitchensink/src/main/java/org/jboss/as/quickstarts/kitchensink/config/MongoConfig.java
 /Users/oliverbecher/2_Projects/mongodb/kitchensink/src/main/java/org/jboss/as/quickstarts/kitchensink/service/MemberServiceImpl.java
+/Users/oliverbecher/2_Projects/mongodb/kitchensink/src/main/java/org/jboss/as/quickstarts/kitchensink/config/EmbeddedMongoConfig.java
 /Users/oliverbecher/2_Projects/mongodb/kitchensink/src/main/java/org/jboss/as/quickstarts/kitchensink/model/Member.java

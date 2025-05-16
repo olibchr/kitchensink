@@ -5,7 +5,6 @@ import org.jboss.as.quickstarts.kitchensink.data.MemberRepository;
 import org.jboss.as.quickstarts.kitchensink.model.Member;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -24,7 +23,6 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    @Transactional
     public Member register(Member member) throws Exception {
         log.info("Registering " + member.getName());
 
@@ -42,7 +40,7 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public Optional<Member> findById(Long id) {
+    public Optional<Member> findById(String id) {
         return memberRepository.findById(id);
     }
 

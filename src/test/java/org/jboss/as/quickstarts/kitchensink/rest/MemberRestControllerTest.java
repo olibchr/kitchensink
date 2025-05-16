@@ -14,6 +14,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.util.Arrays;
+import java.util.Date;
 import java.util.Optional;
 
 import static org.hamcrest.Matchers.hasSize;
@@ -47,13 +48,13 @@ public class MemberRestControllerTest {
     public void testListAllMembers() throws Exception {
         // given
         Member member1 = new Member();
-        member1.setId(1L);
+        member1.setId("60f7a6b15f8ee27e1a61dea1");
         member1.setName("Member 1");
         member1.setEmail("member1@example.com");
         member1.setPhoneNumber("1234567890");
 
         Member member2 = new Member();
-        member2.setId(2L);
+        member2.setId("60f7a6b15f8ee27e1a61dea2");
         member2.setName("Member 2");
         member2.setEmail("member2@example.com");
         member2.setPhoneNumber("0987654321");
@@ -72,15 +73,15 @@ public class MemberRestControllerTest {
     public void testGetMemberById() throws Exception {
         // given
         Member member = new Member();
-        member.setId(1L);
+        member.setId("60f7a6b15f8ee27e1a61dea1");
         member.setName("Test Member");
         member.setEmail("test@example.com");
         member.setPhoneNumber("1234567890");
 
-        when(memberService.findById(1L)).thenReturn(Optional.of(member));
+        when(memberService.findById("60f7a6b15f8ee27e1a61dea1")).thenReturn(Optional.of(member));
 
         // when & then
-        mockMvc.perform(get("/rest/members/1"))
+        mockMvc.perform(get("/rest/members/60f7a6b15f8ee27e1a61dea1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name", is("Test Member")))
                 .andExpect(jsonPath("$.email", is("test@example.com")));
@@ -95,10 +96,14 @@ public class MemberRestControllerTest {
         newMember.setPhoneNumber("1234567890");
 
         Member savedMember = new Member();
-        savedMember.setId(3L);
+        savedMember.setId("60f7a6b15f8ee27e1a61dea3");
         savedMember.setName("New Member");
         savedMember.setEmail("new@example.com");
         savedMember.setPhoneNumber("1234567890");
+
+        // Set audit fields using setters for testing
+        savedMember.setCreatedAt(new Date());
+        savedMember.setUpdatedAt(new Date());
 
         when(memberService.register(any(Member.class))).thenReturn(savedMember);
 
@@ -107,7 +112,7 @@ public class MemberRestControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(newMember)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id", is(3)))
+                .andExpect(jsonPath("$.id", is("60f7a6b15f8ee27e1a61dea3")))
                 .andExpect(jsonPath("$.name", is("New Member")));
     }
 

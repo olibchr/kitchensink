@@ -11,7 +11,7 @@ public interface MemberService {
 
     List<Member> findAllOrderedByName();
 
-    Optional<Member> findById(Long id);
+    Optional<Member> findById(String id);
 
     Optional<Member> findByEmail(String email);
 }
