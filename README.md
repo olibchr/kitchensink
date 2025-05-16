@@ -1,11 +1,12 @@
 # Spring Kitchensink Application
 
-This is a migrated version of the JBoss EAP Kitchensink quickstart application, now using Spring Boot with Java 21.
+This is a migrated version of the JBoss EAP Kitchensink quickstart application, now using Spring Boot with Java 21 and MongoDB.
 
 ## Prerequisites
 
 - Java 21 or later
 - Maven 3.9.0 or later
+- MongoDB (optional, as embedded MongoDB is included)
 
 ## Building and Running the Application
 
@@ -28,12 +29,13 @@ The application will be available at: http://localhost:8080/kitchensink/
 This application has been migrated from a traditional JBoss EAP application to Spring Boot with the following changes:
 
 1. **Data Layer**
-   - JPA entities migrated to use Spring Data JPA
-   - Repository interfaces created using Spring Data JPA
+   - JPA entities migrated to MongoDB documents
+   - Repository interfaces created using Spring Data MongoDB
+   - Embedded MongoDB for development and testing
 
 2. **Service Layer**
    - EJB components migrated to Spring Services
-   - Transaction management handled by Spring's `@Transactional`
+   - Transaction management handled by MongoDB's transactions
 
 3. **REST API**
    - JAX-RS endpoints migrated to Spring REST Controllers
@@ -54,12 +56,12 @@ This application has been migrated from a traditional JBoss EAP application to S
 
 ## Database
 
-The application uses an in-memory H2 database by default. The H2 console is available at `/kitchensink/h2-console`.
+The application uses MongoDB for data storage. By default, it uses an embedded MongoDB instance running on port 27018.
 
-Database connection details:
-- JDBC URL: `jdbc:h2:mem:kitchensinkdb`
-- Username: `sa`
-- Password: (empty) 
+MongoDB connection details:
+- Host: `localhost`
+- Port: `27018`
+- Database: `kitchensinkdb`
 
 ## Documentation
 
@@ -68,6 +70,7 @@ The documentation folder contains comprehensive information about the applicatio
 - **API Documentation**: Detailed OpenAPI specifications in `openapi.yaml` for all REST endpoints
 - **Data Models**: Visual representation of data models using Mermaid diagrams in `data-models.md`
 - **API Schema**: Details of data schemas and validation rules in `API_SCHEMA.md`
+- **MongoDB Migration**: Guidelines and steps for MongoDB migration in `mongodb-migration.md`
 
 ## Measurement Scripts
 
