@@ -1,9 +1,0 @@
-org/jboss/as/quickstarts/kitchensink/test/GetAllMembersEndToEndIT.class
-org/jboss/as/quickstarts/kitchensink/test/CreateMemberEndToEndIT.class
-org/jboss/as/quickstarts/kitchensink/test/MemberApiEndToEndIT.class
-org/jboss/as/quickstarts/kitchensink/rest/MemberRestControllerTest.class
-org/jboss/as/quickstarts/kitchensink/rest/HealthCheckControllerTest.class
-org/jboss/as/quickstarts/kitchensink/test/ComprehensiveApiEndToEndIT.class
-org/jboss/as/quickstarts/kitchensink/service/MemberServiceTest.class
-org/jboss/as/quickstarts/kitchensink/model/MemberTest.class
-org/jboss/as/quickstarts/kitchensink/data/MemberRepositoryTest.class

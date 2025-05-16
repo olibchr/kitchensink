@@ -1,8 +1,0 @@
-org/jboss/as/quickstarts/kitchensink/data/MemberRepository.class
-org/jboss/as/quickstarts/kitchensink/KitchensinkApplication.class
-org/jboss/as/quickstarts/kitchensink/model/Member.class
-org/jboss/as/quickstarts/kitchensink/controller/MemberController.class
-org/jboss/as/quickstarts/kitchensink/rest/HealthCheckController.class
-org/jboss/as/quickstarts/kitchensink/rest/MemberRestController.class
-org/jboss/as/quickstarts/kitchensink/config/ValidatorConfig.class
-org/jboss/as/quickstarts/kitchensink/service/MemberService.class
