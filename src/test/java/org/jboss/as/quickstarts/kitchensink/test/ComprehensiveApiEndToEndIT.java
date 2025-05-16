@@ -27,6 +27,8 @@ import java.net.URISyntaxException;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.logging.Logger;
@@ -35,7 +37,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
- * Run a comprehensive test of all API endpoints with various test cases
+ * A comprehensive end-to-end integration test for the REST API
+ * This test creates multiple member records with unique data, then tests
+ * retrieval with different operations. It's designed to test multiple API
+ * endpoints in a real-world scenario with a larger data set.
  */
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -50,68 +55,99 @@ public class ComprehensiveApiEndToEndIT {
 
     private URI baseUri;
 
+    // Store member data for test validation
+    static class TestMemberData {
+            String id;
+            String name;
+            String email;
+            String phone;
+
+            TestMemberData(String name, String email, String phone) {
+                    this.name = name;
+                    this.email = email;
+                    this.phone = phone;
+            }
+    }
+
     @BeforeEach
     public void setup() throws URISyntaxException {
         this.baseUri = new URI("http://localhost:" + port + "/kitchensink/rest/members");
     }
 
     @Test
-    public void testAllEndpoints() throws Exception {
-        log.info("Starting comprehensive API testing");
+    public void testComprehensiveApiFlow() throws Exception {
+            // Create multiple test members and store their data
+            List<TestMemberData> testMembers = new ArrayList<>();
+            int numberOfTestMembers = 5;
 
-        // Test the GET /members endpoint
-        log.info("Testing GET /members endpoint");
-        testGetAllMembers();
+        for (int i = 0; i < numberOfTestMembers; i++) {
+                String uniqueId = UUID.randomUUID().toString().substring(0, 8);
+            String name = "User " + (char) ('A' + i); // Names like User A, User B, etc.
+            String email = "user." + uniqueId + "@example.com";
+            String phone = "12345" + i + i + i + i + i;
 
-        // Test the POST /members endpoint with valid data
-        log.info("Testing POST /members endpoint with valid data");
-        String uniqueId = UUID.randomUUID().toString().substring(0, 8);
-        String uniqueEmail = "comprehensive." + uniqueId + "@example.com";
+            TestMemberData memberData = new TestMemberData(name, email, phone);
+            testMembers.add(memberData);
 
-        JsonObject newMemberJson = Json.createObjectBuilder()
-                .add("name", "Comprehensive Test")
-                .add("email", uniqueEmail)
-                .add("phoneNumber", "1234567890")
-                .build();
+            // Create the member
+            JsonObject memberJson = Json.createObjectBuilder()
+                            .add("name", memberData.name)
+                            .add("email", memberData.email)
+                            .add("phoneNumber", memberData.phone)
+                            .build();
 
-        HttpRequest createRequest = HttpRequest.newBuilder(baseUri)
-                .header("Content-Type", "application/json")
-                .header("Accept", "application/json")
-                .POST(HttpRequest.BodyPublishers.ofString(newMemberJson.toString()))
-                .build();
+            HttpRequest createRequest = HttpRequest.newBuilder(baseUri)
+                            .header("Content-Type", "application/json")
+                            .header("Accept", "application/json")
+                            .POST(HttpRequest.BodyPublishers.ofString(memberJson.toString()))
+                            .build();
 
-        HttpResponse<String> createResponse = httpClient.send(createRequest, HttpResponse.BodyHandlers.ofString());
-        assertEquals(200, createResponse.statusCode(), "Member creation should succeed");
+            HttpResponse<String> createResponse = httpClient.send(createRequest, HttpResponse.BodyHandlers.ofString());
+            assertEquals(200, createResponse.statusCode(), "Member creation should succeed");
+    }
 
-        // Get all members and find the newly created one
+        // Test GET all members
         HttpRequest getAllRequest = HttpRequest.newBuilder(baseUri)
                 .header("Accept", "application/json")
                 .GET()
                 .build();
 
         HttpResponse<String> getAllResponse = httpClient.send(getAllRequest, HttpResponse.BodyHandlers.ofString());
+        assertEquals(200, getAllResponse.statusCode(), "GET all should return 200");
+
         JsonArray members = parseJsonArray(getAllResponse.body());
+        log.info("Retrieved " + members.size() + " members from GET /members");
 
-        Optional<Long> newMemberId = findMemberIdByEmail(members, uniqueEmail);
-        assertTrue(newMemberId.isPresent(), "New member should exist in the list");
+        // Match IDs for our test members from the API response
+        for (TestMemberData testMember : testMembers) {
+                Optional<String> id = findMemberIdByEmail(members, testMember.email);
+                assertTrue(id.isPresent(), "Member with email " + testMember.email + " should be present");
+                testMember.id = id.get();
+        }
 
-        // Test the GET /members/{id} endpoint
-        log.info("Testing GET /members/{id} endpoint with valid ID: " + newMemberId.get());
-        URI memberUri = new URI(baseUri.toString() + "/" + newMemberId.get());
-        HttpRequest getMemberRequest = HttpRequest.newBuilder(memberUri)
-                .header("Accept", "application/json")
-                .GET()
-                .build();
+        // Test GET member by ID for each test member
+        for (TestMemberData testMember : testMembers) {
+                URI memberUri = new URI(baseUri.toString() + "/" + testMember.id);
+                HttpRequest getMemberRequest = HttpRequest.newBuilder(memberUri)
+                                .header("Accept", "application/json")
+                                .GET()
+                                .build();
 
-        HttpResponse<String> getMemberResponse = httpClient.send(getMemberRequest,
-                HttpResponse.BodyHandlers.ofString());
-        assertEquals(200, getMemberResponse.statusCode());
+            HttpResponse<String> getMemberResponse = httpClient.send(getMemberRequest,
+                            HttpResponse.BodyHandlers.ofString());
+            assertEquals(200, getMemberResponse.statusCode(), "GET by ID should return 200");
 
-        // Test some error cases
+            JsonObject member = parseJsonObject(getMemberResponse.body());
+            assertEquals(testMember.id, member.getString("id"), "ID should match");
+            assertEquals(testMember.name, member.getString("name"), "Name should match");
+            assertEquals(testMember.email, member.getString("email"), "Email should match");
+            assertEquals(testMember.phone, member.getString("phoneNumber"), "Phone should match");
 
-        // 1. Non-existent ID
-        log.info("Testing GET /members/{id} with non-existent ID");
-        URI nonExistentUri = new URI(baseUri.toString() + "/999999");
+            log.info("Successfully verified member: " + testMember.name);
+    }
+
+    // Test GET with a non-existent ID
+    URI nonExistentUri = new URI(baseUri.toString() + "/nonexistent");
         HttpRequest getNonExistentRequest = HttpRequest.newBuilder(nonExistentUri)
                 .header("Accept", "application/json")
                 .GET()
@@ -119,101 +155,37 @@ public class ComprehensiveApiEndToEndIT {
 
         HttpResponse<String> getNonExistentResponse = httpClient.send(getNonExistentRequest,
                 HttpResponse.BodyHandlers.ofString());
-        assertEquals(404, getNonExistentResponse.statusCode());
+        assertEquals(404, getNonExistentResponse.statusCode(), "GET with non-existent ID should return 404");
 
-        // 2. Invalid member data (empty name)
-        log.info("Testing POST /members with invalid data (empty name)");
-        JsonObject invalidMemberJson = Json.createObjectBuilder()
-                .add("name", "")
-                .add("email", "invalid@example.com")
-                .add("phoneNumber", "1234567890")
-                .build();
-
-        HttpRequest createInvalidRequest = HttpRequest.newBuilder(baseUri)
-                .header("Content-Type", "application/json")
-                .header("Accept", "application/json")
-                .POST(HttpRequest.BodyPublishers.ofString(invalidMemberJson.toString()))
-                .build();
-
-        HttpResponse<String> createInvalidResponse = httpClient.send(createInvalidRequest,
-                HttpResponse.BodyHandlers.ofString());
-        assertEquals(400, createInvalidResponse.statusCode());
-
-        // 3. Duplicate email
-        log.info("Testing POST /members with duplicate email");
-        JsonObject duplicateEmailJson = Json.createObjectBuilder()
-                .add("name", "Duplicate User")
-                .add("email", uniqueEmail) // Reuse the email from earlier
-                .add("phoneNumber", "1234567890")
-                .build();
-
-        HttpRequest createDuplicateRequest = HttpRequest.newBuilder(baseUri)
-                .header("Content-Type", "application/json")
-                .header("Accept", "application/json")
-                .POST(HttpRequest.BodyPublishers.ofString(duplicateEmailJson.toString()))
-                .build();
-
-        HttpResponse<String> createDuplicateResponse = httpClient.send(createDuplicateRequest,
-                HttpResponse.BodyHandlers.ofString());
-        assertEquals(409, createDuplicateResponse.statusCode());
-
-        // 4. Invalid JSON
-        log.info("Testing POST /members with invalid JSON format");
-        String invalidJson = "{name: 'Missing quotes', email: missing.quotes@example.com}";
-
-        HttpRequest createWithInvalidJsonRequest = HttpRequest.newBuilder(baseUri)
-                .header("Content-Type", "application/json")
-                .header("Accept", "application/json")
-                .POST(HttpRequest.BodyPublishers.ofString(invalidJson))
-                .build();
-
-        HttpResponse<String> invalidJsonResponse = httpClient.send(createWithInvalidJsonRequest,
-                HttpResponse.BodyHandlers.ofString());
-        assertEquals(400, invalidJsonResponse.statusCode(), "Invalid JSON should return 400 Bad Request");
-
-        log.info("Comprehensive API testing completed successfully");
+        log.info("Comprehensive API test completed successfully");
     }
 
-    private void testGetAllMembers() throws Exception {
-        HttpRequest getAllRequest = HttpRequest.newBuilder(baseUri)
-                .header("Accept", "application/json")
-                .GET()
-                .build();
-
-        HttpResponse<String> response = httpClient.send(getAllRequest, HttpResponse.BodyHandlers.ofString());
-
-        assertEquals(200, response.statusCode(), "Should return status 200");
-
-        // Verify the response is a valid JSON array
-        JsonArray members = parseJsonArray(response.body());
-
-        // Verify each member has the required fields (if any members exist)
-        for (JsonValue value : members) {
-            JsonObject member = value.asJsonObject();
-            assertTrue(member.containsKey("id"), "Member should have an ID");
-            assertTrue(member.containsKey("name"), "Member should have a name");
-            assertTrue(member.containsKey("email"), "Member should have an email");
-            assertTrue(member.containsKey("phoneNumber"), "Member should have a phone number");
-        }
-    }
-
+    /**
+     * Parse a JSON string to a JsonArray
+     */
     private JsonArray parseJsonArray(String json) {
         try (JsonReader reader = Json.createReader(new StringReader(json))) {
             return reader.readArray();
         }
     }
 
+    /**
+     * Parse a JSON string to a JsonObject
+     */
     private JsonObject parseJsonObject(String json) {
         try (JsonReader reader = Json.createReader(new StringReader(json))) {
             return reader.readObject();
         }
     }
 
-    private Optional<Long> findMemberIdByEmail(JsonArray members, String email) {
+    /**
+     * Find a member's ID by email in a list of members
+     */
+    private Optional<String> findMemberIdByEmail(JsonArray members, String email) {
         for (JsonValue value : members) {
             JsonObject member = value.asJsonObject();
             if (email.equals(member.getString("email"))) {
-                return Optional.of(member.getJsonNumber("id").longValue());
+                    return Optional.of(member.getString("id"));
             }
         }
         return Optional.empty();

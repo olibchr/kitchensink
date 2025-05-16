@@ -18,6 +18,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import jakarta.json.Json;
 import jakarta.json.JsonObject;
+import jakarta.json.JsonObjectBuilder;
 import jakarta.json.JsonReader;
 
 import java.io.StringReader;
@@ -95,11 +96,28 @@ public class CreateMemberEndToEndIT {
         }
 
         // Create the test member
-        JsonObject memberJson = Json.createObjectBuilder()
-                .add("name", name)
-                .add("email", email)
-                .add("phoneNumber", phoneNumber)
-                .build();
+        JsonObjectBuilder jsonBuilder = Json.createObjectBuilder();
+
+        // Only add non-null fields
+        if (name != null) {
+                jsonBuilder.add("name", name);
+        } else {
+                jsonBuilder.addNull("name"); // Use addNull for null values
+        }
+
+        if (email != null) {
+                jsonBuilder.add("email", email);
+        } else {
+                jsonBuilder.addNull("email");
+        }
+
+        if (phoneNumber != null) {
+                jsonBuilder.add("phoneNumber", phoneNumber);
+        } else {
+                jsonBuilder.addNull("phoneNumber");
+        }
+
+        JsonObject memberJson = jsonBuilder.build();
 
         HttpRequest createRequest = HttpRequest.newBuilder(baseUri)
                 .header("Content-Type", "application/json")

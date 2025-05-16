@@ -1,7 +1,9 @@
 package org.jboss.as.quickstarts.kitchensink.rest;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ValidationException;
+import jakarta.validation.Validator;
 import org.jboss.as.quickstarts.kitchensink.model.Member;
 import org.jboss.as.quickstarts.kitchensink.service.MemberService;
 import org.junit.jupiter.api.BeforeEach;
@@ -15,11 +17,14 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Optional;
+import java.util.Set;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anySet;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -33,6 +38,9 @@ public class MemberRestControllerTest {
     @Mock
     private MemberService memberService;
 
+    @Mock
+    private Validator validator;
+
     @InjectMocks
     private MemberRestController memberRestController;
 
@@ -42,6 +50,9 @@ public class MemberRestControllerTest {
     public void setup() {
         MockitoAnnotations.openMocks(this);
         mockMvc = MockMvcBuilders.standaloneSetup(memberRestController).build();
+
+        // Setup validator to return empty violations by default (valid)
+        when(validator.validate(any(), any())).thenReturn(new HashSet<>());
     }
 
     @Test
@@ -105,6 +116,8 @@ public class MemberRestControllerTest {
         savedMember.setCreatedAt(new Date());
         savedMember.setUpdatedAt(new Date());
 
+        // Mock validation to return no violations (valid)
+        when(validator.validate(any(Member.class))).thenReturn(new HashSet<>());
         when(memberService.register(any(Member.class))).thenReturn(savedMember);
 
         // when & then
@@ -124,6 +137,8 @@ public class MemberRestControllerTest {
         newMember.setEmail("existing@example.com");
         newMember.setPhoneNumber("1234567890");
 
+        // Mock validation to return no violations (valid)
+        when(validator.validate(any(Member.class))).thenReturn(new HashSet<>());
         when(memberService.register(any(Member.class))).thenThrow(new ValidationException("Email already exists"));
 
         // when & then

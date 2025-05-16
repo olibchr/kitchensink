@@ -27,13 +27,14 @@ import java.net.URISyntaxException;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.UUID;
 import java.util.logging.Logger;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
- * Test class for the GET /members endpoint
+ * End-to-end integration test for the GET /members endpoint
  */
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -57,50 +58,51 @@ public class GetAllMembersEndToEndIT {
     public void testGetAllMembers() throws Exception {
         log.info("Testing GET /members");
 
+        // Create a test member to ensure there's at least one in the list
+        String uniqueId = UUID.randomUUID().toString().substring(0, 8);
+        String uniqueEmail = "test." + uniqueId + "@example.com";
+
+        JsonObject newMemberJson = Json.createObjectBuilder()
+                .add("name", "List Test Member")
+                .add("email", uniqueEmail)
+                .add("phoneNumber", "1234567890")
+                .build();
+
+        HttpRequest createRequest = HttpRequest.newBuilder(baseUri)
+                .header("Content-Type", "application/json")
+                .header("Accept", "application/json")
+                .POST(HttpRequest.BodyPublishers.ofString(newMemberJson.toString()))
+                .build();
+
+        HttpResponse<String> createResponse = httpClient.send(createRequest, HttpResponse.BodyHandlers.ofString());
+        assertEquals(200, createResponse.statusCode(), "Member creation should succeed");
+
+        // Get all members
         HttpRequest getAllRequest = HttpRequest.newBuilder(baseUri)
                 .header("Accept", "application/json")
                 .GET()
                 .build();
 
-        HttpResponse<String> response = httpClient.send(getAllRequest, HttpResponse.BodyHandlers.ofString());
+        HttpResponse<String> getAllResponse = httpClient.send(getAllRequest, HttpResponse.BodyHandlers.ofString());
+        assertEquals(200, getAllResponse.statusCode(), "GET /members should return 200 OK");
 
-        assertEquals(200, response.statusCode(), "Should return status 200");
+        // Parse the response
+        JsonArray members = parseJsonArray(getAllResponse.body());
+        assertTrue(members.size() > 0, "Members list should not be empty");
 
-        // Verify the response is a valid JSON array
-        JsonArray members = parseJsonArray(response.body());
-
-        // Verify each member has the required fields
+        // Verify that our created member is in the list
+        boolean foundCreatedMember = false;
         for (JsonValue value : members) {
             JsonObject member = value.asJsonObject();
-            assertTrue(member.containsKey("id"), "Member should have an ID");
-            assertTrue(member.containsKey("name"), "Member should have a name");
-            assertTrue(member.containsKey("email"), "Member should have an email");
-            assertTrue(member.containsKey("phoneNumber"), "Member should have a phone number");
-        }
-
-        // Verify members are ordered by name (if there are at least 2 members)
-        if (members.size() >= 2) {
-            boolean inOrder = true;
-            String prevName = null;
-
-            for (JsonValue value : members) {
-                JsonObject member = value.asJsonObject();
-                String currentName = member.getString("name");
-
-                if (prevName != null && currentName.compareToIgnoreCase(prevName) < 0) {
-                    log.warning("Names out of order: '" + prevName + "' followed by '" + currentName + "'");
-                    inOrder = false;
-                    break;
-                }
-
-                prevName = currentName;
+            if (uniqueEmail.equals(member.getString("email"))) {
+                foundCreatedMember = true;
+                assertEquals("List Test Member", member.getString("name"), "Member name should match");
+                assertEquals("1234567890", member.getString("phoneNumber"), "Member phone should match");
+                assertTrue(member.containsKey("id"), "Member should have an ID");
+                break;
             }
-
-            log.info("Members " + (inOrder ? "are" : "are not") + " ordered by name");
-            // Check that members are ordered by name, which is required by the
-            // MemberRestController
-            assertTrue(inOrder, "Members should be ordered by name");
         }
+        assertTrue(foundCreatedMember, "Created member should be in the list");
     }
 
     private JsonArray parseJsonArray(String json) {

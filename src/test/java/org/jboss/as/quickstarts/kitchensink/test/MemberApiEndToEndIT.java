@@ -110,7 +110,7 @@ public class MemberApiEndToEndIT {
         assertEquals(initialCount + 1, updatedMembers.size(), "Member count should increase by 1");
 
         // Find the new member in the list and get its ID
-        Optional<Long> newMemberId = findMemberIdByEmail(updatedMembers, uniqueEmail);
+        Optional<String> newMemberId = findMemberIdByEmail(updatedMembers, uniqueEmail);
         assertTrue(newMemberId.isPresent(), "New member should exist in the updated list");
 
         // Step 4: Get the specific member by ID
@@ -126,7 +126,7 @@ public class MemberApiEndToEndIT {
         assertEquals(200, getMemberResponse.statusCode());
 
         JsonObject member = parseJsonObject(getMemberResponse.body());
-        assertEquals(newMemberId.get().longValue(), member.getJsonNumber("id").longValue(), "Member ID should match");
+        assertEquals(newMemberId.get(), member.getString("id"), "Member ID should match");
         assertEquals("Test Member", member.getString("name"), "Member name should match");
         assertEquals(uniqueEmail, member.getString("email"), "Member email should match");
         assertEquals("1234567890", member.getString("phoneNumber"), "Member phone should match");
@@ -139,11 +139,11 @@ public class MemberApiEndToEndIT {
      */
     @ParameterizedTest(name = "{2}")
     @MethodSource("getMemberByIdTestData")
-    public void testGetMemberById(long memberId, int expectedStatus, String testDescription) throws Exception {
+    public void testGetMemberById(String memberId, int expectedStatus, String testDescription) throws Exception {
         log.info("Testing GET /members/{id}: " + testDescription);
 
         // For the "valid ID" test case, we need to find a valid ID first
-        long idToTest = memberId;
+        String idToTest = memberId;
 
         if (expectedStatus == 200) {
             // First create a member to get a valid ID
@@ -174,7 +174,7 @@ public class MemberApiEndToEndIT {
                     HttpResponse.BodyHandlers.ofString());
             JsonArray members = parseJsonArray(getAllResponse.body());
 
-            Optional<Long> newMemberId = findMemberIdByEmail(members, uniqueEmail);
+            Optional<String> newMemberId = findMemberIdByEmail(members, uniqueEmail);
             assertTrue(newMemberId.isPresent(), "New member should exist in the list");
 
             idToTest = newMemberId.get();
@@ -206,9 +206,9 @@ public class MemberApiEndToEndIT {
         return Stream.of(
                 // We need a valid ID, but since we don't know existing IDs,
                 // this will be handled specially in the test
-                new Object[] { 1L, 200, "Valid member ID" },
-                new Object[] { -1L, 404, "Negative member ID" },
-                new Object[] { 999999L, 404, "Non-existent member ID" });
+                new Object[] { "valid", 200, "Valid member ID" },
+                new Object[] { "invalid", 404, "Invalid member ID" },
+                new Object[] { "nonexistent", 404, "Non-existent member ID" });
     }
 
     /**
@@ -232,11 +232,11 @@ public class MemberApiEndToEndIT {
     /**
      * Find a member's ID by email in a list of members
      */
-    private Optional<Long> findMemberIdByEmail(JsonArray members, String email) {
+    private Optional<String> findMemberIdByEmail(JsonArray members, String email) {
         for (JsonValue value : members) {
             JsonObject member = value.asJsonObject();
             if (email.equals(member.getString("email"))) {
-                return Optional.of(member.getJsonNumber("id").longValue());
+                return Optional.of(member.getString("id"));
             }
         }
         return Optional.empty();
